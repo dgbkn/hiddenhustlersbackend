@@ -71,9 +71,9 @@ Running: function Running(){
 
 
 //middle wares
- checkAuth : function checkAuth(req, res, next){
+ checkAuth :async function checkAuth(req, res, next){
    
- const auth =  req.headers['Authorization'];
+ const auth = req.headers['Authorization'];
  if(!auth){
     // throw new InvalidToken();
     res.status(401);
@@ -81,11 +81,13 @@ Running: function Running(){
  }else{
    try{
      var decoded = jwt.verify(auth, secret);
+   const user = await User.findOne({ where: { publicAddress:decoded.publicAddress,id:decoded.id  } });
+     
    }catch(e){
     res.status(401);
-   res.json({error:e.message});
+   res.json({error:"Error:" + e.message});
    }
-     if(decoded['name']==='dev'){
+    if(user){
            next();
      }else{
     res.status(401);

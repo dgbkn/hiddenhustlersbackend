@@ -18,6 +18,14 @@ User.init({
   username: {
     type: DataTypes.STRING,
     unique: true
+  },
+  isProvider:{
+   type: DataTypes.BOOLEAN,
+   defaultValue:false,
+  },
+ credits:{
+   type: DataTypes.DOUBLE,
+   defaultValue:0,
   }
 }, {
   sequelize,
