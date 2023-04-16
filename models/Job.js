@@ -12,17 +12,16 @@ Job.init({
     type: DataTypes.STRING,
     unique: false
   },
-  id:{
-   type: DataTypes.INTEGER,
-   defaultValue:false,
-  unique:true
-  },
  credits:{
    type: DataTypes.DOUBLE,
    defaultValue:0,
   },
   skills:{
    type: DataTypes.STRING,
+   defaultValue:0,
+  },
+  userid:{
+   type: DataTypes.INTEGER,
    defaultValue:0,
   }
 }, {

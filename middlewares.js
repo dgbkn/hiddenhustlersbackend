@@ -1,6 +1,7 @@
 const cookieParser = require('cookie-parser');
 const jwt = require("jsonwebtoken");
 const secret = process.env.secret;
+const User = require('./models/User');
 
 //user get Error Handeling
 module.exports = {
@@ -73,7 +74,8 @@ Running: function Running(){
 //middle wares
  checkAuth :async function checkAuth(req, res, next){
    
- const auth = req.headers['Authorization'];
+ const auth = req.headers['Authorization'] || req.headers['authorization'];
+   
  if(!auth){
     // throw new InvalidToken();
     res.status(401);
@@ -81,18 +83,25 @@ Running: function Running(){
  }else{
    try{
      var decoded = jwt.verify(auth, secret);
-   const user = await User.findOne({ where: { publicAddress:decoded.publicAddress,id:decoded.id  } });
+     pubadd = decoded.payload.publicAddress;
+     idd = decoded.payload.id;
+          // console.log(pubadd);
+        // req.locals.usr = idd;
      
-   }catch(e){
-    res.status(401);
-   res.json({error:"Error:" + e.message});
-   }
-    if(user){
+   const user = await User.findOne({ where: { publicAddress:pubadd,id:idd  } });
+         if(user){
+
+
            next();
      }else{
     res.status(401);
    res.json({error:"Invalid Token Used"});
   }
+   }catch(e){
+    res.status(401);
+   res.json({error:"Error:" + e.message});
+   }
+
  }
 
 },

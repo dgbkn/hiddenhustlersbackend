@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const middlewares = require('./middlewares');
 const User = require('./models/User');
+const Job = require('./models/Job');
 const { body, validationResult } = require('express-validator');
 const { generateUsername } = require("unique-username-generator");
 const ethUtil = require('ethereumjs-util');
@@ -64,7 +65,7 @@ if (user) {
  res.json({ success: 'False',error:"User already exists" })
   // console.log('Not found!');
 } else {
-  const usr = await User.create({ publicAddress: publicAddress, username: req.body.username ?? generateUsername() });
+  const usr = await User.create({ publicAddress: publicAddress,isProvider:req.body.isProvider, username: req.body.username ?? generateUsername() });
    res.json(usr);
 }
     }else{
@@ -78,6 +79,48 @@ if (user) {
   }
 
 });
+
+
+router.post('/api/jobs/add',middlewares.checkAuth, async (req, res) => {
+  if(req.body.name && req.body.name != ""){
+    // console.log(user);
+    const usr = await Job.create(req.body);
+        res.json({success:"added"});
+  }
+  else{
+    res.status(401);
+    res.json({error:"name shoud be provided"});
+  }
+
+});
+
+
+
+
+router.get('/api/jobs/get',middlewares.checkAuth, async (req, res) => {
+  if(req.query.userid){
+    console.log(req.query);
+        const jobs = await Job.findAll({
+  where: {
+    "userid":req.query.userid
+  }
+});
+    res.json(jobs);
+  }
+  else{
+    res.status(401);
+    res.json({error:"user shoud be provided"});
+  }
+
+});
+
+router.get('/api/jobs/getAll',middlewares.checkAuth, async (req, res) => {
+    // console.log(user);
+    const jobs = await Job.findAll();
+    res.json(jobs);
+});
+
+
 
 router.post('/auth', async (req, res) => {
   if(req.body.publicAddress && req.body.publicAddress != "" && req.body.signature && req.body.signature != ""){
